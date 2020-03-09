@@ -27,6 +27,7 @@
 #include "platform/android/activity/JNIXBMCJsonHandler.h"
 #include "platform/android/activity/JNIXBMCFile.h"
 #include "platform/android/activity/JNIXBMCDisplayManagerDisplayListener.h"
+#include "platform/android/activity/JNIXBMCTextureCache.h"
 #include "utils/StringUtils.h"
 #include "XBMCApp.h"
 
@@ -147,6 +148,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)
   jni::CJNIXBMCMediaSession::RegisterNatives(env);
   jni::CJNIXBMCJsonHandler::RegisterNatives(env);
   jni::CJNIXBMCFile::RegisterNatives(env);
+  jni::CJNIXBMCTextureCache::RegisterNatives(env);
 
   jclass cMain = env->FindClass(mainClass.c_str());
   if(cMain)
