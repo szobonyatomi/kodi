@@ -825,18 +825,10 @@ bool CDVDVideoCodecAndroidMediaCodec::AddData(const DemuxPacket &packet)
   uint8_t *pData(packet.pData);
   size_t iSize(packet.iSize);
 
-  if (m_state == MEDIACODEC_STATE_ENDOFSTREAM)
+  if (m_state == MEDIACODEC_STATE_ENDOFSTREAM || m_state == MEDIACODEC_STATE_ERROR)
   {
-    // We received a packet but already reached EOS. Flush...
-    FlushInternal();
-    m_codec->flush();
-    if (xbmc_jnienv()->ExceptionCheck())
-    {
-      xbmc_jnienv()->ExceptionClear();
-      CLog::Log(LOGERROR, "CDVDVideoCodecAndroidMediaCodec::AddData: flush failed");
-      return false;
-    }
-    m_state = MEDIACODEC_STATE_FLUSHED;
+    // We received a packet but already reached EOS. Reset...
+	Reset();
   }
 
   if (pData && iSize)
@@ -1022,7 +1014,14 @@ void CDVDVideoCodecAndroidMediaCodec::Reset()
 
 bool CDVDVideoCodecAndroidMediaCodec::Reconfigure(CDVDStreamInfo &hints)
 {
-  CLog::Log(LOGDEBUG, "CDVDVideoCodecAndroidMediaCodec::Reconfigure called");
+  if (m_hints.Equal(hints, CDVDStreamInfo::COMPARE_ALL &
+                               ~(CDVDStreamInfo::COMPARE_ID | CDVDStreamInfo::COMPARE_EXTRADATA)))
+  {
+    CLog::Log(LOGDEBUG, "CDVDVideoCodecAndroidMediaCodec::Reconfigure: true");
+    m_hints = hints;
+    return true;
+  }
+  CLog::Log(LOGDEBUG, "CDVDVideoCodecAndroidMediaCodec::Reconfigure: false");
   return false;
 }
 
