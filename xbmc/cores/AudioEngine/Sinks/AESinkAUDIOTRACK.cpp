@@ -259,7 +259,6 @@ CAESinkAUDIOTRACK::CAESinkAUDIOTRACK()
   m_duration_written = 0;
   m_offset = -1;
   m_headPos = 0;
-  m_volume = -1;
   m_sink_sampleRate = 0;
   m_passthrough = false;
   m_min_buffer_size = 0;
@@ -303,7 +302,6 @@ bool CAESinkAUDIOTRACK::IsSupported(int sampleRateInHz, int channelConfig, int e
 bool CAESinkAUDIOTRACK::Initialize(AEAudioFormat &format, std::string &device)
 {
   m_format      = format;
-  m_volume      = -1;
   m_offset = -1;
   m_headPos = 0;
   m_linearmovingaverage.clear();
@@ -544,27 +542,12 @@ bool CAESinkAUDIOTRACK::Initialize(AEAudioFormat &format, std::string &device)
   }
   format = m_format;
 
-  // Force volume to 100% for IEC passthrough
-  if (m_passthrough && m_info.m_wantsIECPassthrough)
-  {
-    CXBMCApp::get()->AcquireAudioFocus();
-    m_volume = CXBMCApp::GetSystemVolume();
-    CXBMCApp::SetSystemVolume(1.0);
-  }
-
   return true;
 }
 
 void CAESinkAUDIOTRACK::Deinitialize()
 {
   CLog::Log(LOGDEBUG, "CAESinkAUDIOTRACK::Deinitialize");
-
-  // Restore volume
-  if (m_volume != -1)
-  {
-    CXBMCApp::SetSystemVolume(m_volume);
-    CXBMCApp::get()->ReleaseAudioFocus();
-  }
 
   if (!m_at_jni)
     return;
