@@ -71,6 +71,7 @@ set(package_files strings.xml
                   src/XBMCVideoView.java
                   src/XBMCFile.java
                   src/XBMCTextureCache.java
+                  src/XBMCURIUtils.java
                   src/channels/SyncChannelJobService.java
                   src/channels/SyncProgramsJobService.java
                   src/channels/model/XBMCDatabase.java
